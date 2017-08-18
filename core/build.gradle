@@ -1,0 +1,29 @@
+group 'net.eraga.rxusb'
+version '0.9-SNAPSHOT'
+
+buildscript {
+    ext.kotlin_version = '1.1.4-2'
+    ext.rxJava_version = '2.1.3'
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+apply plugin: 'kotlin'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+
+    compile "io.reactivex.rxjava2:rxjava:$rxJava_version"
+
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+}

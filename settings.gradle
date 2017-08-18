@@ -1,0 +1,6 @@
+rootProject.name = 'rxusb'
+include 'core'
+include 'libusb'
+include 'serial'
+include 'examples'
+
