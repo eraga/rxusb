@@ -61,7 +61,7 @@ uploadArchives {
 
             pom.project {
                 name 'Reactive USB high level facade library'
-                packaging 'aar'
+                packaging 'jar'
                 description 'RxUsb is a cross-platform USB facade library'
                 url 'https://github.com/eraga/rxusb'
 
