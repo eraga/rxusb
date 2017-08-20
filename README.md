@@ -30,10 +30,36 @@ compile "net.eraga.rxusb:libusb-android:1.0.0"
 
 List all connected USB devices:
 ```kotlin
-val usbService = UsbService.instance
+val usbManager = UsbService.instance
 
-usbService.getDeviceList().forEach {
+usbManager.getDeviceList().forEach {
     println(it)
 }
+```
+
+Subscribe to bulk transfers' content and print it to `stdout` as soon as it comes with the power of `rxjava2`:
+```kotlin
+val usbManager = UsbService.instance
+
+val device = usbManager.findDevice(0x1a86, 0x7523)
+
+val deviceConnection = usbManager.openDevice(device)
+
+val interfaceConnection = deviceConnection.claimInterface(device.getInterface(0))
+
+val bulkEndpoint = interfaceConnection.open(
+        device.getInterface(0).getEndpoint(0)
+) as BulkReadableChannel
+
+bulkEndpoint.subscribeOn(Schedulers.io())
+        .map<String> { byteArray ->
+            // Lets think that this usb device sends UTF-8 text
+            byteArray.toString(Charsets.UTF_8)
+        }
+        .observeOn(Schedulers.single())
+        .subscribe({ text ->
+            // output incoming text
+            println(text)
+        })
 ```
 
