@@ -98,7 +98,7 @@ uploadArchives {
 
 
 release {
-    failOnCommitNeeded = true
+    failOnCommitNeeded = false
     failOnPublishNeeded = true
     failOnSnapshotDependencies = true
     failOnUnversionedFiles = true
@@ -126,6 +126,7 @@ release {
 //        signTag = false
     }
 
-    afterReleaseBuild.dependsOn uploadArchives
+
 }
 
+afterReleaseBuild.dependsOn uploadArchives
