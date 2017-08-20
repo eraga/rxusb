@@ -15,6 +15,9 @@ apply plugin: 'kotlin'
 
 repositories {
     mavenCentral()
+    maven {
+        url 'http://nexus.eraga.net/content/repositories/public-releases/'
+    }
 }
 
 dependencies {
@@ -22,7 +25,7 @@ dependencies {
 
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
 
-    compile project(":libusb")
+    compile "net.eraga.rxusb:libusb:1.0.1"
 }
 
 compileKotlin {
