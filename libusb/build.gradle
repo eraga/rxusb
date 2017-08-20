@@ -36,11 +36,8 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     compile "org.usb4java:usb4java:$usb4java_version"
 
-    if(version.toString().contains("SNAPSHOT")) {
-        compile project(":core")
-    } else {
+//        compile project(":core")
         compile "net.eraga.rxusb:core:1.0.0"
-    }
 }
 
 configurations {
