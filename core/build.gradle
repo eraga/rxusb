@@ -66,7 +66,7 @@ uploadArchives {
         beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
 
-        repository(url: "http://nexus.eraga.net/content/repositories/public-snapshots/") {
+        repository(url: "http://nexus.eraga.net/content/repositories/public-releases/") {
             authentication(userName: nexusUsername, password: nexusPassword)
         }
 
