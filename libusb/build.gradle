@@ -39,7 +39,7 @@ dependencies {
     if(version.toString().contains("SNAPSHOT")) {
         compile project(":core")
     } else {
-        compile "net.eraga.rxusb:core:0.10"
+        compile "net.eraga.rxusb:core:1.0.0"
     }
 }
 
