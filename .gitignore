@@ -2,7 +2,7 @@ build/
 .gradle/
 
 *.iml
-gradle.properties
+/gradle.properties
 
 
 # Windows thumbnail cache files
