@@ -1,5 +1,7 @@
 # RxUsb
-High level cross-platform usb library built with Kotlin with reactive streams
+High level cross-platform usb library built with Kotlin with reactive streams.
+
+**LIBRARY IS UNDER DEVELOPMENT AND MAY LACK SOME IMPORTANT FEATURES.** Currently it can be used primarily for reading data from usb bulk transfers. 
 
 ## How to use
 
