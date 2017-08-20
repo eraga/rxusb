@@ -2,6 +2,7 @@ package net.eraga.rxusb.platform
 
 import net.eraga.rxusb.*
 import net.eraga.rxusb.exceptions.UsbEntityNotFound
+import net.eraga.rxusb.exceptions.UsbException
 import org.usb4java.*
 
 
@@ -102,25 +103,35 @@ class LibUsbManager internal constructor()
         LibUsb.getConfigDescriptor(device, 0, configDesc).throwOnFail()
 
 
-        val handle = device.getHandle()
-
         var productName =
                 "USB ${descriptor.bcdUSB()} ${DescriptorUtils.getUSBClassName(descriptor.bDeviceClass())} Device"
-        if (descriptor.iProduct().toInt() != 0)
-            productName = LibUsb.getStringDescriptor(handle, descriptor.iProduct()) ?: productName
-
-
         var manufacturerName = "USB Device"
-        if (descriptor.iProduct().toInt() != 0)
-            manufacturerName = LibUsb.getStringDescriptor(handle, descriptor.iManufacturer()) ?: manufacturerName
-
-
         var serialNumber = "UNKNOWN"
-        if (descriptor.iProduct().toInt() != 0)
-            serialNumber = LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber()) ?: serialNumber
+
+        var handle: DeviceHandle? = null
+
+        try {
+            handle = device.getHandle()
+
+            if (descriptor.iProduct().toInt() != 0)
+                productName = LibUsb.getStringDescriptor(handle, descriptor.iProduct()) ?: productName
+
+
+            if (descriptor.iProduct().toInt() != 0)
+                manufacturerName = LibUsb.getStringDescriptor(handle, descriptor.iManufacturer()) ?: manufacturerName
+
+
+            if (descriptor.iProduct().toInt() != 0)
+                serialNumber = LibUsb.getStringDescriptor(handle, descriptor.iSerialNumber()) ?: serialNumber
+        } catch (e: UsbException) {
+            serialNumber = "$serialNumber (${e.message.toString()})"
+            manufacturerName = "$manufacturerName (${e.message.toString()})"
+            productName = "$productName (${e.message.toString()})"
+        }
 
 
         val configs = device.getConfigs()
+
 
         val usbDevice = UsbDevice(
                 descriptor.idVendor().toInt(),
@@ -136,63 +147,68 @@ class LibUsbManager internal constructor()
 
         usbDevice.device = device
 
+        val defaultConfName: String
+        if (handle == null) {
+            defaultConfName = "Permission denied"
+        } else {
+            defaultConfName = "UNKNOWN"
+        }
+
         val usbConfigurations = Array<UsbConfiguration>(configs.size, {
             val usbConfiguration = UsbConfiguration(
                     configs[it].bConfigurationValue().toPositiveInt(),
-                    LibUsb.getStringDescriptor(handle, configs[it].iConfiguration()) ?: "UNKNOWN",
+                    LibUsb.getStringDescriptor(handle, configs[it].iConfiguration()) ?: defaultConfName,
                     configs[it].bmAttributes().toInt(),
                     configs[it].bMaxPower().toInt()
 
             )
 
-            usbConfiguration.interfaces = convertInterfaces(configs[it].iface(), usbDevice)
+            usbConfiguration.interfaces = convertInterfaces(configs[it].iface(), usbDevice, handle)
 
             return@Array usbConfiguration
         })
 
         usbDevice.configurations = usbConfigurations
 
-        LibUsb.close(handle)
+        if(handle != null)
+            LibUsb.close(handle)
 
         return usbDevice
     }
 
-    private fun convertInterfaces(iface: Array<Interface>, usbDevice: UsbDevice): Array<UsbInterface> {
+    private fun convertInterfaces(iface: Array<Interface>, usbDevice: UsbDevice, handle: DeviceHandle?): Array<UsbInterface> {
         val list = ArrayList<UsbInterface>(iface.size)
 
         if (iface.isNotEmpty()) {
-            openDevice(usbDevice).use { connection ->
-                iface.forEach {
-                    it.altsetting().forEach { ifaceDescriptor ->
-                        val usbInterface = UsbInterface(
-                                usbDevice,
-                                ifaceDescriptor.bInterfaceNumber().toPositiveInt(),
-                                ifaceDescriptor.bAlternateSetting().toInt(),
-                                LibUsb.getStringDescriptor(
-                                        (connection as LibUsbDeviceConnection).handle,
-                                        ifaceDescriptor.iInterface()) ?: "UNKNOWN",
-                                ifaceDescriptor.bInterfaceClass().toInt(),
-                                ifaceDescriptor.bInterfaceSubClass().toInt(),
-                                ifaceDescriptor.bInterfaceProtocol().toInt()
+            iface.forEach {
+                it.altsetting().forEach { ifaceDescriptor ->
+                    val usbInterface = UsbInterface(
+                            usbDevice,
+                            ifaceDescriptor.bInterfaceNumber().toPositiveInt(),
+                            ifaceDescriptor.bAlternateSetting().toInt(),
+                            LibUsb.getStringDescriptor(handle,
+                                    ifaceDescriptor.iInterface()) ?: "UNKNOWN",
+                            ifaceDescriptor.bInterfaceClass().toInt(),
+                            ifaceDescriptor.bInterfaceSubClass().toInt(),
+                            ifaceDescriptor.bInterfaceProtocol().toInt()
+                    )
+
+                    val endpoints = ArrayList<UsbEndpoint>(ifaceDescriptor.bNumEndpoints().toPositiveInt())
+                    ifaceDescriptor.endpoint().forEach { endpoint ->
+                        val usbEndpoint = UsbEndpoint(
+                                endpoint.bEndpointAddress().toInt(),
+                                endpoint.bmAttributes().toInt(),
+                                endpoint.wMaxPacketSize().toInt(),
+                                endpoint.bInterval().toPositiveInt()
                         )
-
-                        val endpoints = ArrayList<UsbEndpoint>(ifaceDescriptor.bNumEndpoints().toPositiveInt())
-                        ifaceDescriptor.endpoint().forEach { endpoint ->
-                            val usbEndpoint = UsbEndpoint(
-                                    endpoint.bEndpointAddress().toInt(),
-                                    endpoint.bmAttributes().toInt(),
-                                    endpoint.wMaxPacketSize().toInt(),
-                                    endpoint.bInterval().toPositiveInt()
-                            )
-                            usbEndpoint.usbInterface = usbInterface
-                            endpoints.add(usbEndpoint)
-                        }
-
-                        usbInterface.endpoints = endpoints.toTypedArray()
-                        list.add(usbInterface)
+                        usbEndpoint.usbInterface = usbInterface
+                        endpoints.add(usbEndpoint)
                     }
 
+                    usbInterface.endpoints = endpoints.toTypedArray()
+                    list.add(usbInterface)
                 }
+
             }
         }
         return list.toTypedArray()

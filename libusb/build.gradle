@@ -1,18 +1,25 @@
-version '1.0.21'
+group 'net.eraga.rxusb'
+version '1.0.21-SNAPSHOT'
 
 buildscript {
     ext.kotlin_version = '1.1.4-2'
     ext.usb4java_version = '1.2.0'
+    ext.nexus_plugin_version = '2.3.1'
 
     repositories {
         mavenCentral()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.bmuschko:gradle-nexus-plugin:$nexus_plugin_version"
     }
 }
 
 apply plugin: 'kotlin'
+apply plugin: 'com.bmuschko.nexus'
+
+
+sourceCompatibility = 1.6
 
 repositories {
     mavenCentral()
@@ -22,5 +29,12 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     compile "org.usb4java:usb4java:$usb4java_version"
 
+
     compile project(":core")
+}
+
+nexus {
+    sign = true
+    repositoryUrl = 'http://nexus.eraga.net/content/repositories/public-releases/'
+    snapshotRepositoryUrl = 'http://nexus.eraga.net/content/repositories/public-snapshots/'
 }
