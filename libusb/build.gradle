@@ -99,7 +99,7 @@ uploadArchives {
 
 
 release {
-    failOnCommitNeeded = false
+    failOnCommitNeeded = true
     failOnPublishNeeded = true
     failOnSnapshotDependencies = true
     failOnUnversionedFiles = true
@@ -109,7 +109,7 @@ release {
     preTagCommitMessage = '[Gradle Release Plugin] - pre tag commit: '
     tagCommitMessage = '[Gradle Release Plugin] - creating tag: '
     newVersionCommitMessage = '[Gradle Release Plugin] - new version commit: '
-    tagTemplate = "$version-release"
+    tagTemplate = '$name-$version'
     versionPropertyFile = 'gradle.properties'
     versionProperties = []
     buildTasks = ['build']
@@ -120,7 +120,7 @@ release {
     ]
 
     git {
-        requireBranch = 'master'
+        requireBranch = 'release'
         pushToRemote = 'origin'
         pushToBranchPrefix = ''
         commitVersionFileOnly = false
