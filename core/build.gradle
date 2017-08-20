@@ -1,7 +1,7 @@
 import net.researchgate.release.GitAdapter
 
 group 'net.eraga.rxusb'
-version '0.9-SNAPSHOT'
+version "$version"
 
 buildscript {
     ext.kotlin_version = '1.1.4-2'
@@ -60,7 +60,7 @@ uploadArchives {
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
 
-            repository(url: "http://nexus.eraga.net/content/repositories/public-snapshots/") {
+            repository(url: "http://nexus.eraga.net/content/repositories/public-releases/") {
                 authentication(userName: nexusUsername, password: nexusPassword)
             }
 
