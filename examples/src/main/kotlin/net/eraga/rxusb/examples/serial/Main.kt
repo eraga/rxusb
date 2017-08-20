@@ -39,21 +39,20 @@ internal object Main {
                     log.info("Incoming text $text")
                 })
 
-        val bulkOutEndpoint = interfaceConnection.open(
-                interfaceConnection.usbInterface.getEndpoint(1)
-        ) as BulkWritableChannel
+val bulkOutEndpoint = interfaceConnection.open(
+        interfaceConnection.usbInterface.getEndpoint(1)
+) as BulkWritableChannel
 
-        val text = "Hello World!"
+val text = "Hello World!"
 
-        val textByteBuffer = ByteBuffer.allocateDirect(text.length)
-        textByteBuffer.put(text.toByteArray())
+val textByteBuffer = ByteBuffer.allocateDirect(text.length)
+textByteBuffer.put(text.toByteArray())
 
-        bulkOutEndpoint.send(textByteBuffer)
-                .subscribe ({
-                    log.info("Data successfully sent")
-                },{
-                    log.error("Error: {}", it)
-                })
-
+bulkOutEndpoint.send(textByteBuffer)
+        .subscribe ({
+            log.info("Data successfully sent")
+        },{
+            log.error("Error: {}", it)
+        })
     }
 }

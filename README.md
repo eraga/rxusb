@@ -19,13 +19,13 @@ repositories {
 
 Dependency for Desktop apps:
 ```gradle
-compile "net.eraga.rxusb:libusb:1.0.0"
+compile "net.eraga.rxusb:libusb:1.0.1"
 ```
 
 Dependency for Android apps (libusb):
 
 ```gradle
-compile "net.eraga.rxusb:libusb-android:1.0.0"
+compile "net.eraga.rxusb:libusb-android:1.0.1"
 ```
 
 ### Usage 
@@ -50,7 +50,7 @@ val deviceConnection = usbManager.openDevice(device)
 val interfaceConnection = deviceConnection.claimInterface(device.getInterface(0))
 
 val bulkEndpoint = interfaceConnection.open(
-        device.getInterface(0).getEndpoint(0)
+        interfaceConnection.usbInterface.getEndpoint(0)
 ) as BulkReadableChannel
 
 bulkEndpoint.subscribeOn(Schedulers.io())
@@ -80,4 +80,24 @@ sharedEndpoint
         .subscribe {
     // do some other stuff
 }
+```
+
+Send data to USB device:
+```kotlin
+val bulkOutEndpoint = interfaceConnection.open(
+        interfaceConnection.usbInterface.getEndpoint(1)
+) as BulkWritableChannel
+
+val text = "Hello World!"
+
+val textByteBuffer = ByteBuffer.allocateDirect(text.length)
+textByteBuffer.put(text.toByteArray())
+
+bulkOutEndpoint.send(textByteBuffer)
+        .subscribe ({
+            log.info("Data successfully sent")
+        },{
+            log.error("Error: {}", it)
+        })
+
 ```
