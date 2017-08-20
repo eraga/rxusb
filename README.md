@@ -63,3 +63,19 @@ bulkEndpoint.subscribeOn(Schedulers.io())
         })
 ```
 
+Share bulk transfer data between two different parts of code and treat it differentely: 
+```kotlin
+val sharedEndpoint = bulkEndpoint.share()
+
+sharedEndpoint
+        .subscribeOn(Schedulers.io())
+        .subscribe {
+    // do some incredible stuff
+}
+
+sharedEndpoint
+        .subscribeOn(Schedulers.io())
+        .subscribe {
+    // do some other stuff
+}
+```
