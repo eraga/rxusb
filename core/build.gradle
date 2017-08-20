@@ -1,19 +1,32 @@
+import net.researchgate.release.GitAdapter
+
 group 'net.eraga.rxusb'
 version '0.9-SNAPSHOT'
 
 buildscript {
     ext.kotlin_version = '1.1.4-2'
     ext.rxJava_version = '2.1.3'
+    ext.nexus_plugin_version = '2.3.1'
 
     repositories {
         mavenCentral()
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'net.researchgate:gradle-release:2.4.0'
     }
 }
 
 apply plugin: 'kotlin'
+apply plugin: 'net.researchgate.release'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+
+sourceCompatibility = 1.6
 
 repositories {
     mavenCentral()
@@ -24,6 +37,95 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
     compile "io.reactivex.rxjava2:rxjava:$rxJava_version"
-
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
 }
+
+
+
+configurations {
+    archives {
+        extendsFrom configurations.default
+    }
+}
+
+signing {
+    required { hasProperty("release") && gradle.taskGraph.hasTask("uploadArchives") }
+    sign configurations.archives
+}
+
+uploadArchives {
+    configuration = configurations.archives
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+
+            repository(url: "http://nexus.eraga.net/content/repositories/public-snapshots/") {
+                authentication(userName: nexusUsername, password: nexusPassword)
+            }
+
+            pom.project {
+                name 'Reactive USB high level facade library'
+                packaging 'aar'
+                description 'RxUsb is a cross-platform USB facade library'
+                url 'https://github.com/eraga/rxusb'
+
+                scm {
+                    url 'scm:git@github.com:eraga/rxusb.git'
+                    connection 'scm:git@github.com:eraga/rxusb.git'
+                    developerConnection 'scm:git@github.com:eraga/rxusb.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'tntclaus'
+                        name 'Klaus Schwartz'
+                        email 'tntclaus@gmail.com'
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+release {
+    failOnCommitNeeded = true
+    failOnPublishNeeded = true
+    failOnSnapshotDependencies = true
+    failOnUnversionedFiles = true
+    failOnUpdateNeeded = true
+    revertOnFail = true
+    preCommitText = ''
+    preTagCommitMessage = '[Gradle Release Plugin] - pre tag commit: '
+    tagCommitMessage = '[Gradle Release Plugin] - creating tag: '
+    newVersionCommitMessage = '[Gradle Release Plugin] - new version commit: '
+    tagTemplate = '${version}'
+    versionPropertyFile = 'gradle.properties'
+    versionProperties = []
+    buildTasks = ['build']
+
+
+    scmAdapters = [
+            GitAdapter
+    ]
+
+    git {
+        requireBranch = 'master'
+        pushToRemote = 'origin'
+        pushToBranchPrefix = ''
+        commitVersionFileOnly = false
+//        signTag = false
+    }
+
+    afterReleaseBuild.dependsOn uploadArchives
+}
+

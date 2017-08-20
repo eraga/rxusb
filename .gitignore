@@ -1,6 +1,9 @@
 build/
 .gradle/
 
+*.iml
+gradle.properties
+
 
 # Windows thumbnail cache files
 Thumbs.db
@@ -108,3 +111,4 @@ fabric.properties
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
