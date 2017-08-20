@@ -3,12 +3,14 @@ package net.eraga.rxusb.platform.nio
 import net.eraga.rxusb.UsbEndpoint
 import net.eraga.rxusb.UsbInterfaceConnection
 import net.eraga.rxusb.nio.BulkWritableChannel
+import net.eraga.rxusb.platform.LibUsbInterfaceConnection
+import net.eraga.rxusb.throwOnFail
+import org.usb4java.BufferUtils
+import org.usb4java.LibUsb
 import java.nio.ByteBuffer
+import java.nio.IntBuffer
 
-/**
- * Date: 23/04/2017
- * Time: 23:39
- */
+
 class LibUsbBulkWritableChannel(
         interfaceConnection: UsbInterfaceConnection,
         endpoint: UsbEndpoint,
@@ -16,10 +18,22 @@ class LibUsbBulkWritableChannel(
 ) : BulkWritableChannel(interfaceConnection, endpoint, timeout) {
 
 
-
     @Synchronized
     override fun write(src: ByteBuffer): Int {
-        throw UnsupportedOperationException("not implemented") //TODO
+        val transferred: IntBuffer = BufferUtils.allocateIntBuffer()
+
+        LibUsb.bulkTransfer(
+                (interfaceConnection as LibUsbInterfaceConnection).deviceConnection.handle,
+                endpoint.address.toByte(),
+                src,
+                transferred,
+                timeout)
+                .throwOnFail()
+
+        val t = transferred.get()
+        transferred.clear()
+
+        return t
     }
 
     override fun isOpen(): Boolean = interfaceConnection.isOpen

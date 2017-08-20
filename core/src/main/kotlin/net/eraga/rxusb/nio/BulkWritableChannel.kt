@@ -8,7 +8,7 @@ abstract class BulkWritableChannel(
         val interfaceConnection: UsbInterfaceConnection,
         val endpoint: UsbEndpoint,
         var timeout: Long
-) : WritableByteChannel {
+) : RxWritableByteChannel() {
     override fun isOpen(): Boolean = interfaceConnection.isOpen
 
     @Synchronized
