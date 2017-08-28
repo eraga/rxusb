@@ -21,30 +21,26 @@ internal object Main {
             // Find UBLOX GPS USB device
             val device = usbManager.findDevice(0x1546, 0x01a7)
 
-            val deviceConnection = usbManager.openDevice(device)
 
-            val ifaceConnection = deviceConnection.claimInterface(device.interfaces[1])
 
-            var ubloxLocation: BulkReadableChannel? = null
+            usbManager.openDevice(device).use { dc ->
+                dc.claimInterface(device.interfaces[1], true).use { ic ->
+                    val ubloxLocation: BulkReadableChannel? = ic.usbInterface.endpoints
+                            .find { it.getDirection() == UsbConstants.USB_DIR_IN }
+                            ?.let { ic.open(it) as BulkReadableChannel }
 
-            ifaceConnection.usbInterface.endpoints.forEach {
-                if (it.getDirection() == UsbConstants.USB_DIR_IN) {
-                    ubloxLocation = ifaceConnection.open(it) as BulkReadableChannel
+                    if (ubloxLocation == null) {
+                        log.error("No IN endpoint found for device interface. Are you sure this is correct device?")
+                        return
+                    }
 
-                    return@forEach
+                    val locationService = LocationService(ubloxLocation)
+
+                    locationService.sharedObservable().subscribe({
+                        log.info("Location update: {}", it)
+                    })
                 }
             }
-
-            if (ubloxLocation == null) {
-                log.error("No IN endpoint found for device interface. Are you sure this is correct device?")
-                return
-            }
-
-            val locationService = LocationService(ubloxLocation!!)
-
-            locationService.sharedObservable().subscribe({
-                log.info("Location update: {}", it)
-            })
 
 
         } catch (notFound: UsbEntityNotFound) {
