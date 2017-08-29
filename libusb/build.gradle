@@ -39,7 +39,7 @@ dependencies {
     compile "org.usb4java:usb4java:$usb4java_version"
 
 //        compile project(":core")
-    compile "net.eraga.rxusb:core:1.0.1"
+    compile "net.eraga.rxusb:core:1.0.2"
 
 }
 
