@@ -1,7 +1,7 @@
 version '0.9-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.1.4-2'
+    ext.kotlin_version = '1.2.41'
 
     repositories {
         mavenCentral()
@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     compile project(":core")
 }

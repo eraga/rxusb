@@ -4,7 +4,7 @@ group 'net.eraga.rxusb'
 version "$version"
 
 buildscript {
-    ext.kotlin_version = '1.1.4-2'
+    ext.kotlin_version = '1.2.41'
     ext.usb4java_version = '1.2.0'
 
     repositories {
@@ -35,7 +35,7 @@ repositories {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     compile "org.usb4java:usb4java:$usb4java_version"
 
 //        compile project(":core")

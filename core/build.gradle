@@ -2,8 +2,8 @@ group 'net.eraga.rxusb'
 version "$version"
 
 buildscript {
-    ext.kotlin_version = '1.1.4-2'
-    ext.rxJava_version = '2.1.3'
+    ext.kotlin_version = '1.2.41'
+    ext.rxJava_version = '2.1.13'
 
     repositories {
         mavenCentral()
@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
     compile "io.reactivex.rxjava2:rxjava:$rxJava_version"

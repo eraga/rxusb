@@ -2,8 +2,10 @@ package net.eraga.rxusb.examples.ubloxgps
 
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
+import io.reactivex.ObservableOnSubscribe
 import net.eraga.rxusb.examples.ubloxgps.data.Location
 import net.eraga.rxusb.nio.RxReadableByteChannel
+import java.util.concurrent.TimeUnit
 
 
 class LocationService(
@@ -20,10 +22,16 @@ class LocationService(
             freshData(String(array, Charsets.US_ASCII))
         }
 
-        sharedObservable = Observable.create<Location>({
-            emitter = it
-        }).share()
+        val asd = ObservableOnSubscribe<Location> { e ->
+            emitter = e
+            println("emitter")
+        }
 
+
+        sharedObservable = Observable.create<Location>(asd).share()
+
+
+        sharedObservable.subscribe()
     }
 
 
@@ -31,11 +39,17 @@ class LocationService(
     private fun freshData(string: String) {
 
         if (string.isNotEmpty()) {
-            print(string)
+//            print(string)
             if (string.startsWith("\$GPGGA")) {
                 val location = string.toLocation()
-                if (location != null)
-                    emitter.onNext(location)
+                try {
+                    if (location != null)
+                        println(location)
+//                        emitter.onNext(location)
+                } catch (e: UninitializedPropertyAccessException) {
+//                    println("emitter not initialized")
+                }
+
             }
 
         } else
@@ -65,6 +79,7 @@ class LocationService(
             return Location(lat, lon, alt, sep, hdop)
         } catch (e: Exception) {
             println(e)
+            Observable.interval(0,0, TimeUnit.SECONDS);
         }
         return null
     }

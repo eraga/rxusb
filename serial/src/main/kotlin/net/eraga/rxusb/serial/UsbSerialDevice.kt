@@ -264,7 +264,7 @@ abstract class UsbSerialDevice(
 //            workerThread!!.stopWorkingThread()
 //            workerThread = null
 //        } else if (!mr1Version && readThread != null) {
-        readThread!!.stopReadThread()
+        readThread.stopReadThread()
 //        readThread = null
 //        }
     }
@@ -288,7 +288,7 @@ abstract class UsbSerialDevice(
 
     protected fun killWriteThread() {
         if (writeThread != null) {
-            writeThread!!.stopWriteThread()
+            writeThread.stopWriteThread()
 //            writeThread = null
             serialBuffer.resetWriteBuffer()
         }
@@ -296,8 +296,8 @@ abstract class UsbSerialDevice(
 
     protected fun restartWriteThread() {
         writeThread = WriteThread()
-        writeThread!!.start()
-        while (!writeThread!!.isAlive) {
+        writeThread.start()
+        while (!writeThread.isAlive) {
         } // Busy waiting
     }
 
