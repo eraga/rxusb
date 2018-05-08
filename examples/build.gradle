@@ -2,6 +2,7 @@ version '0.10'
 
 buildscript {
     ext.kotlin_version = '1.2.41'
+    ext.rxusbVersion = '1.0.4'
 
     repositories {
         mavenCentral()
@@ -25,7 +26,7 @@ dependencies {
 
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
 
-    compile "net.eraga.rxusb:libusb:1.0.1"
+    compile "net.eraga.rxusb:libusb:$rxusbVersion"
 }
 
 compileKotlin {
