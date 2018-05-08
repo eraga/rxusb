@@ -63,8 +63,10 @@ signing {
 uploadArchives {
     configuration = configurations.archives
     repositories.mavenDeployer {
-        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+        if(!project.hasProperty('nexusUsername') || !project.hasProperty('nexusPassword'))
+            return
 
+        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
         repository(url: "http://nexus.eraga.net/content/repositories/public-releases/") {
             authentication(userName: nexusUsername, password: nexusPassword)

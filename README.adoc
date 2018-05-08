@@ -1,11 +1,15 @@
-# RxUsb
+= RxUsb
+
+[link="https://travis-ci.org/eraga/rxusb"]
+image::https://api.travis-ci.org/eraga/rxusb.svg?branch=master[]
+
 High level cross-platform usb library built with Kotlin with reactive streams.
 
-**LIBRARY IS UNDER DEVELOPMENT AND MAY LACK SOME IMPORTANT FEATURES.** Currently it can be used primarily for reading data from usb bulk transfers. 
+**LIBRARY IS UNDER DEVELOPMENT AND MAY LACK SOME IMPORTANT FEATURES.** Currently it can be used primarily for reading data from usb bulk transfers.
 
-## How to use
+== How to use
 
-### Library setup 
+=== Library setup
 
 Add custom maven repository
 ```gradle
@@ -28,7 +32,7 @@ Dependency for Android apps (libusb):
 compile "net.eraga.rxusb:libusb-android:1.0.2"
 ```
 
-### Usage 
+=== Usage
 
 List all connected USB devices:
 ```kotlin
@@ -65,7 +69,7 @@ bulkEndpoint.subscribeOn(Schedulers.io())
         })
 ```
 
-Share bulk transfer data between two different parts of code and treat it differentely: 
+Share bulk transfer data between two different parts of code and treat it differentely:
 ```kotlin
 val sharedEndpoint = bulkEndpoint.share()
 
