@@ -23,13 +23,13 @@ repositories {
 
 Dependency for Desktop apps:
 ```gradle
-compile "net.eraga.rxusb:libusb:1.0.4"
+compile "net.eraga.rxusb:libusb:1.0.5"
 ```
 
 Dependency for Android apps (libusb):
 
 ```gradle
-compile "net.eraga.rxusb:libusb-android:1.0.4"
+compile "net.eraga.rxusb:libusb-android:1.0.5"
 ```
 
 === Usage
