@@ -38,25 +38,26 @@ class LibUsbManager internal constructor()
     }
 
     private fun filterDevices(vendorId: Short?, productId: Short?): Array<UsbDevice> {
-        if (vendorId == null || productId == null)
-            return emptyArray()
-
         val list = DeviceList()
 
         val result = LibUsb.getDeviceList(null, list)
 
         if (result < 0)
             result.throwOnFail("Unable to get device list")
+        val listFiltered: List<Device>
+        if (vendorId != null && productId != null) {
+            listFiltered = list.filter { device ->
+                val descriptor = DeviceDescriptor()
+                LibUsb.getDeviceDescriptor(device, descriptor)
+                        .throwOnFail("Unable to read device descriptor")
 
-        val listFiltered = list.filter { device ->
-            val descriptor = DeviceDescriptor()
-            LibUsb.getDeviceDescriptor(device, descriptor)
-                    .throwOnFail("Unable to read device descriptor")
+                val filter = (descriptor.idVendor() == vendorId &&
+                        descriptor.idProduct() == productId)
 
-            val filter = (descriptor.idVendor() == vendorId &&
-                    descriptor.idProduct() == productId)
-
-            return@filter filter
+                return@filter filter
+            }
+        } else {
+            listFiltered = list.map { it }
         }
 
         try {
