@@ -1,10 +1,11 @@
 version '0.9-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.2.41'
+    ext.kotlin_version = '1.2.60'
 
     repositories {
         mavenCentral()
+
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -15,13 +16,18 @@ apply plugin: 'kotlin'
 
 repositories {
     mavenCentral()
+    maven {
+        url 'http://nexus.eraga.net/content/repositories/public-releases/'
+    }
 }
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    compile project(":core")
+//    compile project(":core")
+    compile "net.eraga.rxusb:core:1.0.4"
 }
+
 
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"

@@ -4,7 +4,7 @@ group 'net.eraga.rxusb'
 version "$version"
 
 buildscript {
-    ext.kotlin_version = '1.2.41'
+    ext.kotlin_version = '1.2.60'
     ext.usb4java_version = '1.2.0'
     ext.rxusbVersion = '1.0.4'
 
