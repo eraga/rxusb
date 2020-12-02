@@ -5,8 +5,8 @@ version "$version"
 
 buildscript {
     ext.kotlin_version = '1.2.60'
-    ext.usb4java_version = '1.2.0'
-    ext.rxusbVersion = '1.0.5'
+    ext.usb4java_version = '1.3.0'
+    ext.rxusbVersion = '1.0.6-SNAPSHOT'
 
     repositories {
         mavenCentral()
@@ -16,14 +16,14 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'net.researchgate:gradle-release:2.4.0'
+        classpath 'net.researchgate:gradle-release:2.8.1'
     }
 }
 
 apply plugin: 'kotlin'
 apply plugin: 'net.researchgate.release'
-apply plugin: 'maven'
 apply plugin: 'signing'
+apply plugin: 'maven-publish'
 
 
 sourceCompatibility = 1.6
@@ -31,85 +31,94 @@ sourceCompatibility = 1.6
 repositories {
     mavenCentral()
     maven {
-        url 'http://nexus.eraga.net/content/repositories/public-releases/'
+        url 'https://packages.eraga.net/repository/eraga-public-maven-unstable/'
+    }
+    maven {
+        url 'https://packages.eraga.net/repository/eraga-public-maven-releases/'
     }
 }
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     compile "org.usb4java:usb4java:$usb4java_version"
-
-//        compile project(":core")
+    compile project(":core")
     compile "net.eraga.rxusb:core:$rxusbVersion"
 
 }
 
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
+
+task sourceJar(type: Jar) {
+    archiveClassifier = 'sources'
+    from sourceSets.main.allJava
 }
 
-artifacts {
-    archives sourcesJar
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier = 'javadoc'
+    from javadoc.destinationDir
 }
 
-configurations {
-    archives {
-        extendsFrom configurations.default
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+
+                name = "RxUsb libusb for windows/osx/linux wrapper"
+                description = "RxUsb is a cross-platform USB facade library"
+                url = "https://github.com/eraga/rxusb"
+
+                scm {
+                    url = "scm:git@github.com:eraga/rxusb.git"
+                    connection = "scm:git@github.com:eraga/rxusb.git"
+                    developerConnection = "scm:git@github.com:eraga/rxusb.git"
+                }
+
+                licenses {
+                    license {
+                        //noinspection GroovyAssignabilityCheck
+                        name = "The Apache Software License, Version 2.0"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                        //noinspection GroovyAssignabilityCheck
+                        distribution = "repo"
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = "tntclaus"
+                        name = "Klaus Schwartz"
+                        email = "tntclaus@gmail.com"
+                    }
+                }
+            }
+
+            groupId group
+            artifactId archivesBaseName
+            version version
+            from components.java
+            artifact sourceJar
+            artifact javadocJar
+        }
+    }
+    repositories {
+        maven {
+            def repositoryUrl = 'https://packages.eraga.net/repository/eraga-public-maven-releases/'
+            def snapshotRepositoryUrl = 'https://packages.eraga.net/repository/eraga-public-maven-unstable/'
+            url !version.endsWith("SNAPSHOT") ? repositoryUrl : snapshotRepositoryUrl
+            credentials {
+                username = "$nexusUsername"
+                password = "$nexusPassword"
+            }
+        }
     }
 }
 
 signing {
-    required { hasProperty("release") && gradle.taskGraph.hasTask("uploadArchives") }
-    sign configurations.archives
+    useGpgCmd()
+    sign publishing.publications.mavenJava
 }
 
-uploadArchives {
-    configuration = configurations.archives
-    repositories.mavenDeployer {
-        if(!project.hasProperty('nexusUsername') || !project.hasProperty('nexusPassword'))
-            return
-
-        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-
-        repository(url: "http://nexus.eraga.net/content/repositories/public-releases/") {
-            authentication(userName: nexusUsername, password: nexusPassword)
-        }
-
-        pom.project {
-            //noinspection GroovyAssignabilityCheck
-            name 'RxUsb libusb for windows/osx/linux wrapper'
-            packaging 'jar'
-            description 'RxUsb is a cross-platform USB facade library'
-            url 'https://github.com/eraga/rxusb'
-
-            scm {
-                url 'scm:git@github.com:eraga/rxusb.git'
-                connection 'scm:git@github.com:eraga/rxusb.git'
-                developerConnection 'scm:git@github.com:eraga/rxusb.git'
-            }
-
-            licenses {
-                license {
-                    //noinspection GroovyAssignabilityCheck
-                    name 'The Apache Software License, Version 2.0'
-                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    //noinspection GroovyAssignabilityCheck
-                    distribution 'repo'
-                }
-            }
-
-            developers {
-                developer {
-                    id 'tntclaus'
-                    //noinspection GroovyAssignabilityCheck
-                    name 'Klaus Schwartz'
-                    email 'tntclaus@gmail.com'
-                }
-            }
-        }
-    }
+tasks.withType(Sign) {
+    onlyIf { !version.endsWith("SNAPSHOT") }
 }
 
 
@@ -144,5 +153,3 @@ release {
 
 
 }
-
-afterReleaseBuild.dependsOn uploadArchives

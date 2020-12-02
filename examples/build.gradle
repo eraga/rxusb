@@ -2,7 +2,7 @@ version '0.10'
 
 buildscript {
     ext.kotlin_version = '1.2.41'
-    ext.rxusbVersion = '1.0.4'
+    ext.rxusbVersion = '1.0.6-SNAPSHOT'
 
     repositories {
         mavenCentral()
@@ -17,9 +17,13 @@ apply plugin: 'kotlin'
 repositories {
     mavenCentral()
     maven {
-        url 'http://nexus.eraga.net/content/repositories/public-releases/'
+        url 'https://packages.eraga.net/repository/eraga-public-maven-unstable/'
+    }
+    maven {
+        url 'https://packages.eraga.net/repository/eraga-public-maven-releases/'
     }
 }
+
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"

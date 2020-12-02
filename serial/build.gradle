@@ -17,15 +17,17 @@ apply plugin: 'kotlin'
 repositories {
     mavenCentral()
     maven {
-        url 'http://nexus.eraga.net/content/repositories/public-releases/'
+        url 'https://packages.eraga.net/repository/eraga-public-maven-unstable/'
+    }
+    maven {
+        url 'https://packages.eraga.net/repository/eraga-public-maven-releases/'
     }
 }
 
+
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-
-//    compile project(":core")
-    compile "net.eraga.rxusb:core:1.0.5"
+    compile "net.eraga.rxusb:core:1.0.6-SNAPSHOT"
 }
 
 
