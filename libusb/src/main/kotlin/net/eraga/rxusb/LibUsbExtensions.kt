@@ -49,12 +49,12 @@ internal fun Device.getDescriptor(): DeviceDescriptor {
 internal fun Device.getConfigs(): Array<ConfigDescriptor> {
     val numConfigs = this.getDescriptor().bNumConfigurations().toPositiveInt()
 
-    return Array<ConfigDescriptor>(numConfigs, { index ->
+    return Array(numConfigs) { index ->
         val configDesc = ConfigDescriptor()
         LibUsb.getConfigDescriptor(this, index.toByte(), configDesc)
                 .throwOnFail("Configuration $index does not exist on device $this")
         return@Array configDesc
-    })
+    }
 }
 
 

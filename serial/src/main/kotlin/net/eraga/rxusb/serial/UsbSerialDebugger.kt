@@ -1,6 +1,5 @@
 package net.eraga.rxusb.serial
 
-import com.felhr.usbserial.HexData
 import org.slf4j.LoggerFactory
 
 

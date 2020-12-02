@@ -74,25 +74,25 @@ interface UsbSerial {
 
     companion object {
         // Common values
-        val DATA_BITS_5 = 5
-        val DATA_BITS_6 = 6
-        val DATA_BITS_7 = 7
-        val DATA_BITS_8 = 8
+        const val DATA_BITS_5 = 5
+        const val DATA_BITS_6 = 6
+        const val DATA_BITS_7 = 7
+        const val DATA_BITS_8 = 8
 
-        val STOP_BITS_1 = 1
-        val STOP_BITS_15 = 3
-        val STOP_BITS_2 = 2
+        const val STOP_BITS_1 = 1
+        const val STOP_BITS_15 = 3
+        const val STOP_BITS_2 = 2
 
-        val PARITY_NONE = 0
-        val PARITY_ODD = 1
-        val PARITY_EVEN = 2
-        val PARITY_MARK = 3
-        val PARITY_SPACE = 4
+        const val PARITY_NONE = 0
+        const val PARITY_ODD = 1
+        const val PARITY_EVEN = 2
+        const val PARITY_MARK = 3
+        const val PARITY_SPACE = 4
 
-        val FLOW_CONTROL_OFF = 0
-        val FLOW_CONTROL_RTS_CTS = 1
-        val FLOW_CONTROL_DSR_DTR = 2
-        val FLOW_CONTROL_XON_XOFF = 3
+        const val FLOW_CONTROL_OFF = 0
+        const val FLOW_CONTROL_RTS_CTS = 1
+        const val FLOW_CONTROL_DSR_DTR = 2
+        const val FLOW_CONTROL_XON_XOFF = 3
     }
 
 }

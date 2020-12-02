@@ -14,7 +14,7 @@ class LibUsbManager internal constructor()
     }
 
 
-    val context: Context = Context()
+    private val context: Context = Context()
 
     init {
         LibUsb.init(context).throwOnFail()
@@ -45,26 +45,23 @@ class LibUsbManager internal constructor()
         if (result < 0)
             result.throwOnFail("Unable to get device list")
         val listFiltered: List<Device>
-        if (vendorId != null && productId != null) {
-            listFiltered = list.filter { device ->
+        listFiltered = if (vendorId != null && productId != null) {
+            list.filter { device ->
                 val descriptor = DeviceDescriptor()
                 LibUsb.getDeviceDescriptor(device, descriptor)
                         .throwOnFail("Unable to read device descriptor")
 
-                val filter = (descriptor.idVendor() == vendorId &&
+                return@filter (descriptor.idVendor() == vendorId &&
                         descriptor.idProduct() == productId)
-
-                return@filter filter
             }
         } else {
-            listFiltered = list.map { it }
+            list.map { it }
         }
 
         try {
             return Array(
-                    listFiltered.size,
-                    { assembleDevice(listFiltered[it]) }
-            )
+                    listFiltered.size
+            ) { assembleDevice(listFiltered[it]) }
         } finally {
             LibUsb.freeDeviceList(list, true)
         }
@@ -150,14 +147,13 @@ class LibUsbManager internal constructor()
 
         usbDevice.device = device
 
-        val defaultConfName: String
-        if (handle == null) {
-            defaultConfName = "Permission denied"
+        val defaultConfName = if (handle == null) {
+            "Permission denied"
         } else {
-            defaultConfName = "UNKNOWN"
+            "UNKNOWN"
         }
 
-        val usbConfigurations = Array<UsbConfiguration>(configs.size, {
+        val usbConfigurations = Array(configs.size) {
             val usbConfiguration = UsbConfiguration(
                     configs[it].bConfigurationValue().toPositiveInt(),
                     LibUsb.getStringDescriptor(handle, configs[it].iConfiguration()) ?: defaultConfName,
@@ -169,7 +165,7 @@ class LibUsbManager internal constructor()
             usbConfiguration.interfaces = convertInterfaces(configs[it].iface(), usbDevice, handle)
 
             return@Array usbConfiguration
-        })
+        }
 
         usbDevice.configurations = usbConfigurations
 

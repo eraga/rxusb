@@ -1,17 +1,17 @@
-package com.felhr.usbserial
+package net.eraga.rxusb.serial
 
 import kotlin.experimental.and
 
 
 object HexData {
-    private val HEXES = "0123456789ABCDEF"
-    private val HEX_INDICATOR = "0x"
-    private val SPACE = " "
+    private const val HEXES = "0123456789ABCDEF"
+    private const val HEX_INDICATOR = "0x"
+    private const val SPACE = " "
 
     fun hexToString(data: ByteArray): String {
 
         val hex = StringBuilder(2 * data.size)
-        for (i in 0..data.size - 1) {
+        for (i in 0 until data.size) {
             val dataAtIndex = data[i]
             hex.append(HEX_INDICATOR)
             hex.append(HEXES[dataAtIndex.and(0xF0.toByte()).toInt() shr 4])

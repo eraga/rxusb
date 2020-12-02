@@ -31,7 +31,7 @@ class LibUsbBulkReadableChannel(
             )
     }
 
-    val transferred: IntBuffer = BufferUtils.allocateIntBuffer()
+    private val transferred: IntBuffer = BufferUtils.allocateIntBuffer()
 
     @Synchronized
     @Throws(UsbException::class)

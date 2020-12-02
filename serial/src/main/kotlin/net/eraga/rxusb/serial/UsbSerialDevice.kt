@@ -47,7 +47,7 @@ abstract class UsbSerialDevice(
             return -1
 
 
-        readThread!!.setCallback(mCallback)
+        readThread.setCallback(mCallback)
         return 0
     }
 
@@ -60,10 +60,10 @@ abstract class UsbSerialDevice(
     abstract override fun syncClose()
 
     override fun syncWrite(buffer: ByteArray, timeout: Int): Int {
-        if (!asyncMode) {
-            return outEndpoint.write(ByteBuffer.wrap(buffer))
+        return if (!asyncMode) {
+            outEndpoint.write(ByteBuffer.wrap(buffer))
         } else {
-            return -1
+            -1
         }
     }
 
@@ -89,8 +89,7 @@ abstract class UsbSerialDevice(
 
     //Debug options
     fun debug(value: Boolean) {
-        if (serialBuffer != null)
-            serialBuffer!!.debug(value)
+        serialBuffer.debug(value)
     }
 
     private val isFTDIDevice: Boolean
@@ -177,11 +176,7 @@ abstract class UsbSerialDevice(
     protected inner class ReadThread(private val usbSerialDevice: UsbSerialDevice) : Thread() {
 
         private var callback: UsbReadCallback? = null
-        private val working: AtomicBoolean
-
-        init {
-            working = AtomicBoolean(true)
-        }
+        private val working: AtomicBoolean = AtomicBoolean(true)
 
         fun setCallback(callback: UsbReadCallback) {
             this.callback = callback

@@ -4,15 +4,13 @@ import io.reactivex.schedulers.Schedulers
 import net.eraga.rxusb.UsbService
 import net.eraga.rxusb.nio.BulkReadableChannel
 import net.eraga.rxusb.nio.BulkWritableChannel
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.nio.ByteBuffer
 
-/**
- * Date: 23/06/2017
- * Time: 15:15
- */
+
 internal object Main {
-    val log = LoggerFactory.getLogger(Main::class.java)
+    private val log: Logger = LoggerFactory.getLogger(Main::class.java)
 
     @JvmStatic
     fun main(args: Array<String>) {
@@ -34,25 +32,25 @@ internal object Main {
                     byteArray.toString(Charsets.UTF_8)
                 }
                 .observeOn(Schedulers.single())
-                .subscribe({ text ->
+                .subscribe { text ->
                     // output incoming text
                     log.info("Incoming text $text")
+                }
+
+        val bulkOutEndpoint = interfaceConnection.open(
+                interfaceConnection.usbInterface.getEndpoint(1)
+        ) as BulkWritableChannel
+
+        val text = "Hello World!"
+
+        val textByteBuffer = ByteBuffer.allocateDirect(text.length)
+        textByteBuffer.put(text.toByteArray())
+
+        bulkOutEndpoint.send(textByteBuffer)
+                .subscribe({
+                    log.info("Data successfully sent")
+                }, {
+                    log.error("Error: {}", it)
                 })
-
-val bulkOutEndpoint = interfaceConnection.open(
-        interfaceConnection.usbInterface.getEndpoint(1)
-) as BulkWritableChannel
-
-val text = "Hello World!"
-
-val textByteBuffer = ByteBuffer.allocateDirect(text.length)
-textByteBuffer.put(text.toByteArray())
-
-bulkOutEndpoint.send(textByteBuffer)
-        .subscribe ({
-            log.info("Data successfully sent")
-        },{
-            log.error("Error: {}", it)
-        })
     }
 }

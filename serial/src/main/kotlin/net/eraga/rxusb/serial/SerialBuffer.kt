@@ -124,8 +124,8 @@ class SerialBuffer {
     }
 
     companion object {
-        val DEFAULT_READ_BUFFER_SIZE = 16 * 1024
-        val DEFAULT_WRITE_BUFFER_SIZE = 16 * 1024
+        const val DEFAULT_READ_BUFFER_SIZE = 16 * 1024
+        const val DEFAULT_WRITE_BUFFER_SIZE = 16 * 1024
     }
 
 }
