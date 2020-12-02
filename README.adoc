@@ -16,7 +16,7 @@ Add custom maven repository
 repositories {
     mavenCentral()
     maven {
-        url 'http://nexus.eraga.net/content/repositories/public-releases/'
+        url 'https://packages.eraga.net/repository/eraga-public-maven-releases/'
     }
 }
 ```
