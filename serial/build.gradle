@@ -1,7 +1,6 @@
 version '0.9-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.2.60'
 
     repositories {
         mavenCentral()
@@ -27,7 +26,7 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    compile "net.eraga.rxusb:core:1.0.6-SNAPSHOT"
+    compile "net.eraga.rxusb:core:1.0.6"
 }
 
 
